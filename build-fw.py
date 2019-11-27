@@ -10,7 +10,7 @@ from collections import OrderedDict
 
 # Show a header
 print("")
-print("Modified script of JumperTX-Build - https://hub.docker.com/r/benlye/jumpertx-build")
+print("The script is based on work of benlye/jumpertx-build")
 print("")
 
 # Specify some paths for the build

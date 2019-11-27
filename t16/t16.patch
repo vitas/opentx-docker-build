@@ -1,0 +1,57 @@
+diff --git a/companion/src/firmwares/opentx/opentxinterface.cpp b/companion/src/firmwares/opentx/opentxinterface.cpp
+index 9509c3c28..28551ee9a 100644
+--- a/companion/src/firmwares/opentx/opentxinterface.cpp
++++ b/companion/src/firmwares/opentx/opentxinterface.cpp
+@@ -772,9 +772,9 @@ bool OpenTxFirmware::isAvailable(PulsesProtocol proto, int port)
+             return true;
+           case PULSES_PXX_XJT_X16:
+           case PULSES_PXX_XJT_LR12:
+-            return !IS_ACCESS_RADIO(board, id) && board != BOARD_JUMPER_T16;
++            return !IS_ACCESS_RADIO(board, id);
+           case PULSES_PXX_XJT_D8:
+-            return !(IS_ACCESS_RADIO(board, id)  || id.contains("eu")) && board != BOARD_JUMPER_T16;
++            return !(IS_ACCESS_RADIO(board, id)  || id.contains("eu"));
+           case PULSES_PPM:
+             return id.contains("internalppm");
+           case PULSES_ACCESS_ISRM:
+diff --git a/radio/src/targets/horus/CMakeLists.txt b/radio/src/targets/horus/CMakeLists.txt
+index bfa37d9d5..a1ddb4b4e 100644
+--- a/radio/src/targets/horus/CMakeLists.txt
++++ b/radio/src/targets/horus/CMakeLists.txt
+@@ -52,6 +52,8 @@ if (PCB STREQUAL X10)
+     set(FLAVOUR t16)
+     set(LUA_EXPORT lua_export_t16)
+     add_definitions(-DRADIO_T16)
++    option(INTERNAL_MODULE_PXX1 "Support for PXX1 internal module" ON)
++    option(INTERNAL_MODULE_PXX2 "Support for PXX2 internal module" OFF)
+     option(INTERNAL_MODULE_MULTI "Support for MULTI internal module" OFF)
+     option(BLUETOOTH "Support for bluetooth module" OFF)
+   else()
+diff --git a/radio/src/targets/horus/hal.h b/radio/src/targets/horus/hal.h
+index e7afa6ddb..1432492ab 100644
+--- a/radio/src/targets/horus/hal.h
++++ b/radio/src/targets/horus/hal.h
+@@ -588,9 +588,8 @@
+   #define HAPTIC_TIMER_COMPARE_VALUE    HAPTIC_GPIO_TIMER->CCR2
+ #endif
+ 
+-#if !defined(RADIO_T16)
+ #define EXTERNAL_ANTENNA
+-#endif
++
+ #define INTMODULE_RCC_AHB1Periph        (RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_DMA2)
+ #define INTMODULE_PWR_GPIO              GPIOA
+ #define INTMODULE_PWR_GPIO_PIN          GPIO_Pin_8  // PA.08
+diff --git a/tools/build-companion-nightly.sh b/tools/build-companion-nightly.sh
+index ac2004b16..d427c2dec 100755
+--- a/tools/build-companion-nightly.sh
++++ b/tools/build-companion-nightly.sh
+@@ -31,7 +31,7 @@ if [ "$(uname)" = "Darwin" ]; then
+ fi
+ 
+ if [ "$3" != "" ]; then
+-  COMMON_OPTIONS="${COMMON_OPTIONS} -DVERSION_SUFFIX=$3"
++  COMMON_OPTIONS="${COMMON_OPTIONS} -DVERSION_SUFFIX=$3 ${COMMON_OPTIONS_EXT}"
+ fi
+ 
+ rm -rf build
