@@ -7,10 +7,11 @@ import subprocess
 import shutil
 import time
 from collections import OrderedDict
+from fwoptions import *
 
 # Show a header
 print("")
-print("The script is based on work of benlye/jumpertx-build")
+print("The script to build opentx firmware with docker image  vitass/opentx-fw--build")
 print("")
 
 # Specify some paths for the build
@@ -21,47 +22,7 @@ output_filename = "opentx"
 output_extension = ".bin"
 
 # Maximum size for the compiled firmware
-max_size = -1
-t12_max_size = 65536 * 8
-t16_max_size = 2 * 1024 * 1024
-
-# Default T12 cmake flags
-t12_default_options = OrderedDict([
-    ("PCB", "X7"),
-    ("PCBREV", "T12"),
-    ("GUI", "YES"),
-    ("GVARS", "YES"),
-    ("HELI", "YES"),
-    ("LCD_DUAL_BUFFER", "YES"),
-    ("LUA", "YES"),
-    ("LUA_COMPILER", "YES"),
-    ("MULTIMODULE", "YES"),
-    ("PPM_CENTER_ADJUSTABLE", "YES"),
-    ("PPM_UNIT", "US"),
-    ("RAS", "YES"),
-    ("DISABLE_COMPANION", "YES"),
-    ("CMAKE_BUILD_TYPE", "Release")
-])
-
-# Generic build cmake flags
-t16_default_options = OrderedDict([
-    ("PCB", "X10"),
-    ("PCBREV", "T16"),
-    ("JUMPER_RELEASE", "YES"),
-    ("GUI", "YES"),
-    ("GVARS", "YES"),
-    ("HELI", "YES"),
-    ("LUA", "YES"),
-    ("LUA_COMPILER", "YES"),
-    ("MULTIMODULE", "YES"),
-    ("PPM_CENTER_ADJUSTABLE", "YES"),
-    ("PPM_UNIT", "US"),
-    ("RAS", "YES"),
-    ("DISABLE_COMPANION", "YES"),
-    ("CMAKE_BUILD_TYPE", "Release"),
-    ("HARDWARE_INTERNAL_MODULE", "OFF"),
-    ("INTERNAL_MODULE_MULTI", "YES")
-])
+maxsize = -1
 
 # Generic build cmake flags
 generic_default_options = OrderedDict([
@@ -83,12 +44,19 @@ available_languages = ("EN", "FR", "SE", "IT", "CZ", "DE", "PT", "ES", "PL", "NL
 
 # Check that the source is valid
 if not os.path.exists("/opentx/CMakeLists.txt"):
-    print("ERROR: JumperTX source not found in /opentx. Did you specifiy a valid mount?")
+    print("ERROR: OpenTX source not found in /opentx. Did you specifiy a valid mount?")
     print("")
     exit(5)
 
 # Parse the extra options from the command line
 extra_options = OrderedDict()
+
+if "BOARD_NAME" in os.environ:
+    print("Board name: %s" % os.environ["BOARD_NAME"])
+    board_name = os.environ["BOARD_NAME"]
+else:
+    print("Target board name is not specified. Exit")
+    exit(5)
 
 if "CMAKE_FLAGS" in os.environ:
     print("Additional CMAKE Flags: %s" % os.environ["CMAKE_FLAGS"])
@@ -99,32 +67,88 @@ if "CMAKE_FLAGS" in os.environ:
 else:
     print ("No additional CMAKE flags specified.")
 
-# If specified, get the PCB from the flags; default to the T16
-board = "T16"
-if "PCB" in extra_options:
-    board = extra_options["PCB"].upper()
-
-board_rev = ""
-if "PCBREV" in extra_options:
-    board_rev = extra_options["PCBREV"].upper()
-
-# Get the board defaults
-if board == "T12":
-    radio = "T12"
-    default_options = t12_default_options
-    max_size = t12_max_size
-elif board == "X10" and board_rev == "T16":
-    radio = "T16"
-    default_options = t16_default_options
-    max_size = t16_max_size
+if board_name == "sky9x":
+    extra_options["PCB"] = "SKY9X"
+    firmware_options = options_sky9x
+    maxsize = 65536 * 4
+elif board_name == "9xrpro":
+    extra_options["PCB"] = "9XRPRO"
+    extra_options["SDCARD"] = "YES"
+    firmware_options = options_sky9x
+    maxsize = 65536 * 4
+elif board_name == "ar9x":
+    extra_options["PCB"] = "AR9X"
+    extra_options["SDCARD"] = "YES"
+    firmware_options = options_ar9x
+    maxsize = 65536 * 4
+elif board_name == "x9lite":
+    extra_options["PCB"] = "X9LITE"
+    firmware_options = options_taranis_x9lite
+    maxsize = 65536 * 8
+elif board_name == "x9lites":
+    extra_options["PCB"] = "X9LITES"
+    firmware_options = options_taranis_x9lite
+    maxsize = 65536 * 8
+elif board_name == "x7":
+    extra_options["PCB"] = "X7"
+    extra_options["PCBREV"] = "X7"
+    firmware_options = options_taranis_x9dp
+    maxsize = 65536 * 8
+elif board_name == "xlite":
+    extra_options["PCB"] = "XLITE"
+    firmware_options = options_taranis_xlite
+    maxsize = 65536 * 8
+elif board_name == "xlites":
+    extra_options["PCB"] = "XLITES"
+    firmware_options = options_taranis_xlites
+    maxsize = 65536 * 8
+elif board_name == "x9d":
+    extra_options["PCB"] = "X9D"
+    firmware_options = options_taranis_x9d
+    maxsize = 65536 * 8
+elif board_name == "x9d+":
+    extra_options["PCB"] = "X9D+"
+    firmware_options = options_taranis_x9dp
+    maxsize = 65536 * 8
+elif board_name == "x9d+2019":
+    extra_options["PCB"] = "X9D+"
+    extra_options["PCBREV"] = "2019"
+    firmware_options = options_taranis_x9dp
+    maxsize = 65536 * 8
+elif board_name == "x9e":
+    extra_options["PCB"] = "X9E"
+    firmware_options = options_taranis_x9e
+    maxsize = 65536 * 8
+elif board_name == "x10":
+    extra_options["PCB"] = "X10"
+    firmware_options = options_horus_x10
+    maxsize = 2 * 1024 * 1024
+elif board_name == "x10express":
+    extra_options["PCB"] = "X10"
+    extra_options["PCBREV"] = "EXPRESS"
+    firmware_options = options_horus_x10
+    maxsize = 2 * 1024 * 1024
+elif board_name == "x12s":
+    extra_options["PCB"] = "X12S"
+    firmware_options = options_horus_x12s
+    maxsize = 2 * 1024 * 1024
+elif board_name == "t12":
+    extra_options["PCB"] = "X7"
+    extra_options["PCBREV"] = "T12"
+    firmware_options = options_jumper_t12
+    maxsize = 65536 * 8
+elif board_name == "t16":
+    extra_options["PCB"] = "X10"
+    extra_options["PCBREV"] = "T16"
+    firmware_options = options_jumper_t16
+    maxsize = 2 * 1024 * 1024
 else:
-    radio = board
-    default_options = generic_default_options
-    print("")
-    print("WARNING: Unknown board (%s) specified. Known boards are T12, T16." % board)
-    print("Firmware will be built with generic defaults and any specified CMAKE flags.")
-    print("")
-    #exit(3)
+   firmware_options = generic_default_options
+print("")
+print("WARNING: Unknown board (%s) specified" % board_name)
+print("Firmware will be built with generic defaults and any specified CMAKE flags.")
+print("")
+#exit(3)
 
 # If specified, validate the language from the flags
 if "TRANSLATIONS" in extra_options:
@@ -138,14 +162,14 @@ if "TRANSLATIONS" in extra_options:
 extra_command_options = OrderedDict()
 for ext_opt, ext_value in extra_options.items():
     found = False
-    for def_opt, def_value in default_options.items():
+    for def_opt, def_value in firmware_options.items():
         if ext_opt == def_opt:
             found = True
             break
 
     if found:
         if ext_value != def_value:
-            default_options[def_opt] = ext_value
+            firmware_options[def_opt] = ext_value
             print ("Overriding default flag: %s=%s => %s=%s" % (def_opt, def_value, def_opt, ext_value))
         else:
             if def_opt != "PCB" and def_opt != "PCBREV":
@@ -170,7 +194,7 @@ shutil.copytree("/opentx", "/tmp/opentx")
 cmd = ["cmake"]
 
 # Append the default flags
-for opt, value in default_options.items():
+for opt, value in firmware_options.items():
     cmd.append("-D%s=%s" % (opt, value))
 
 # Append the extra flags
@@ -211,7 +235,7 @@ if proc.returncode != 0:
 end = time.time()
 
 # Append the PCB type to the output file name
-output_filename = output_filename + "-" + radio.lower()
+output_filename = output_filename + "-" + board_name.lower()
 
 # Get the firmware version
 stampfile = "radio/src/stamp.h"
@@ -244,8 +268,8 @@ print("")
 print("Build completed in {0:.1f} seconds.".format((end-start)))
 print("")
 print("Firmware file: %s" % (output_path))
-if max_size > -1:
-    print("Firmware size: {0}KB ({1:.0%})".format(binsize/1024, float(binsize)/float(max_size)))
+if maxsize > -1:
+    print("Firmware size: {0}KB ({1:.0%})".format(binsize/1024, float(binsize)/float(maxsize)))
 else:
     print("")
     print("WARNING: Unable to validate firmware image size")
@@ -253,7 +277,7 @@ else:
 print("")
 
 # Exit with an error if the firmware is too big
-if max_size > -1 and binsize > max_size:
+if maxsize > -1 and binsize > maxsize:
     print("ERROR: Firmware is too large for radio.")
     print("")
     exit(1)

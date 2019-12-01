@@ -1,4 +1,4 @@
-# A Debian image for compiling openTX 2.3+ for jumper T16
+# A Debian image for compiling firmware of openTX 2.3+ 
 FROM debian:stretch
 
 # Update and install the required components
@@ -19,9 +19,10 @@ WORKDIR /build
 
 # Add the build scripts
 COPY build-fw.py /build
+COPY fwoptions.py /build
 
 # Update the path
 ENV PATH $PATH:/opt/gcc-arm-none-eabi/bin:/opentx/radio/util
 
 # Run the shell script to build the firmware
-ENTRYPOINT ["bash", "-c", "python /build/build-fw.py $CMAKE_FLAGS"]
+ENTRYPOINT ["bash", "-c", "python /build/build-fw.py $BOARD_NAME $CMAKE_FLAGS"]
