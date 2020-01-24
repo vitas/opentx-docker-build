@@ -32,7 +32,7 @@ You have to specify a board name as first env variable (BOARD_NAME), it is lower
    
    example build jumper t16 formware:
  
-   docker run --rm -it -e "BOARD_NAME=t16" -v "/home/vitas/github/opentx.git:/opentxtx" vitass/opentx-fw-build`
+   `docker run --rm -it -e "BOARD_NAME=t16" -v "/home/vitas/github/opentx.git:/opentxtx" vitass/opentx-fw-build`
 
 The compiled firmware image will be placed in the root of the source directory when the build has finished.  
 

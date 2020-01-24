@@ -94,6 +94,11 @@ elif board_name == "x7":
     extra_options["PCBREV"] = "X7"
     firmware_options = options_taranis_x9dp
     maxsize = 65536 * 8
+elif board_name == "x7access":
+    extra_options["PCB"] = "X7"
+    extra_options["PCBREV"] = "ACCESS"
+    firmware_options = options_taranis_x9dp
+    maxsize = 65536 * 8
 elif board_name == "xlite":
     extra_options["PCB"] = "XLITE"
     firmware_options = options_taranis_xlite
@@ -143,11 +148,11 @@ elif board_name == "t16":
     firmware_options = options_jumper_t16
     maxsize = 2 * 1024 * 1024
 else:
-   firmware_options = generic_default_options
-print("")
-print("WARNING: Unknown board (%s) specified" % board_name)
-print("Firmware will be built with generic defaults and any specified CMAKE flags.")
-print("")
+    firmware_options = generic_default_options
+    print("")
+    print("WARNING: Unknown board (%s) specified" % board_name)
+    print("Firmware will be built with generic defaults and any specified CMAKE flags.")
+    print("")
 #exit(3)
 
 # If specified, validate the language from the flags
@@ -219,6 +224,10 @@ if proc.returncode != 0:
     print("ERROR: cmake configuration failed.")
     print("")
     exit(2)
+
+
+proc = subprocess.Popen(["make", "clean"])
+proc.wait()
 
 # Launch make with two threads
 proc = subprocess.Popen(["make", "-j2", "firmware"])
