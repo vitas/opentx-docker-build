@@ -147,6 +147,11 @@ elif board_name == "t16":
     extra_options["PCBREV"] = "T16"
     firmware_options = options_jumper_t16
     maxsize = 2 * 1024 * 1024
+elif board_name == "tx16s":
+    extra_options["PCB"] = "X10"
+    extra_options["PCBREV"] = "TX16S"
+    firmware_options = options_radiomaster_tx16s
+    maxsize = 2 * 1024 * 1024
 else:
     firmware_options = generic_default_options
     print("")
