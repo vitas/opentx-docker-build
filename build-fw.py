@@ -203,7 +203,7 @@ os.chdir(build_dir)
 print("")
 print ("Copying source from /opentx to /tmp/opentx ...")
 print("")
-shutil.copytree("/opentx", "/tmp/opentx")
+shutil.copytree("/opentx", "/tmp/opentx", ignore=shutil.ignore_patterns(".git"))
 
 # Prepare the cmake command
 cmd = ["cmake"]
