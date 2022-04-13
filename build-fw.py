@@ -92,12 +92,12 @@ elif board_name == "x9lites":
 elif board_name == "x7":
     extra_options["PCB"] = "X7"
     extra_options["PCBREV"] = "X7"
-    firmware_options = options_taranis_x9dp
+    firmware_options = options_taranis_x7
     maxsize = 65536 * 8
 elif board_name == "x7access":
     extra_options["PCB"] = "X7"
     extra_options["PCBREV"] = "ACCESS"
-    firmware_options = options_taranis_x9dp
+    firmware_options = options_taranis_x7
     maxsize = 65536 * 8
 elif board_name == "xlite":
     extra_options["PCB"] = "XLITE"
