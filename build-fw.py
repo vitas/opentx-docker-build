@@ -11,7 +11,7 @@ from fwoptions import *
 
 # Show a header
 print("")
-print("The script to build opentx firmware with docker image  vitass/opentx-fw--build")
+print("The script to build OpenTX firmware with docker image  vitass/opentx-fw--build")
 print("")
 
 # Specify some paths for the build
@@ -91,7 +91,6 @@ elif board_name == "x9lites":
     maxsize = 65536 * 8
 elif board_name == "x7":
     extra_options["PCB"] = "X7"
-    extra_options["PCBREV"] = "X7"
     firmware_options = options_taranis_x7
     maxsize = 65536 * 8
 elif board_name == "x7access":
@@ -137,25 +136,50 @@ elif board_name == "x12s":
     extra_options["PCB"] = "X12S"
     firmware_options = options_horus_x12s
     maxsize = 2 * 1024 * 1024
+elif board_name == "tlite":
+    extra_options["PCB"] = "X7"
+    extra_options["PCBREV"] = "TLITE"
+    firmware_options = options_jumper_tlite
+    maxsize = 65536 * 8
+elif board_name == "tpro":
+    extra_options["PCB"] = "X7"
+    extra_options["PCBREV"] = "TPRO"
+    firmware_options = options_jumper_tpro
+    maxsize = 65536 * 8
 elif board_name == "t12":
     extra_options["PCB"] = "X7"
     extra_options["PCBREV"] = "T12"
     firmware_options = options_jumper_t12
+    maxsize = 65536 * 8
+elif board_name == "tx12":
+    extra_options["PCB"] = "X7"
+    extra_options["PCBREV"] = "TX12"
+    firmware_options = options_radiomaster_tx12
+    maxsize = 65536 * 8
+elif board_name == "zorro":
+    extra_options["PCB"] = "X7"
+    extra_options["PCBREV"] = "ZORRO"
+    firmware_options = options_radiomaster_zorro
+    maxsize = 65536 * 8
+elif board_name == "t8":
+    extra_options["PCB"] = "X7"
+    extra_options["PCBREV"] = "T8"
+    firmware_options = options_radiomaster_t8
     maxsize = 65536 * 8
 elif board_name == "t16":
     extra_options["PCB"] = "X10"
     extra_options["PCBREV"] = "T16"
     firmware_options = options_jumper_t16
     maxsize = 2 * 1024 * 1024
-elif board_name == "tx16s":
-    extra_options["PCB"] = "X10"
-    extra_options["PCBREV"] = "TX16S"
-    firmware_options = options_radiomaster_tx16s
-    maxsize = 2 * 1024 * 1024
 elif board_name == "t18":
     extra_options["PCB"] = "X10"
     extra_options["PCBREV"] = "T18"
     firmware_options = options_jumper_t18
+    maxsize = 2 * 1024 * 1024
+elif board_name == "tx16s":
+    extra_options["PCB"] = "X10"
+    extra_options["PCBREV"] = "TX16S"
+    firmware_options = options_radiomaster_tx16s
     maxsize = 2 * 1024 * 1024
 else:
     firmware_options = generic_default_options
